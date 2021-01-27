@@ -2,6 +2,8 @@
 
 namespace Jordy\Http\Network;
 
+use Jordy\Http\RequestInterface;
+
 class CurlTransport implements TransportInterface
 {
     private $output;
@@ -19,7 +21,7 @@ class CurlTransport implements TransportInterface
     }
 
     /**
-     * @return mixed
+     * @return TransportOutputInterface
      */
     public function getOutput()
     {
@@ -27,7 +29,7 @@ class CurlTransport implements TransportInterface
     }
 
     /**
-     * @param mixed $output
+     * @param TransportOutputInterface $output
      *
      * @return $this
      */
@@ -109,7 +111,7 @@ class CurlTransport implements TransportInterface
      *
      * @return TransportOutput
      */
-    public function transfer(RequestInterface $request): OutputInterface
+    public function transfer(RequestInterface $request): TransportOutputInterface
     {
         $curlHandle = $this->getCurlHandle();
         $headers = [];

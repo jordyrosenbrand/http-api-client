@@ -2,6 +2,12 @@
 
 namespace Jordy\Http\Api;
 
+use Jordy\Http\ClientInterface;
+use Jordy\Http\Response;
+use Jordy\Http\ResponseInterface;
+use Jordy\Http\ResponseList;
+use Jordy\Http\ResponseListInterface;
+
 abstract class AbstractEndpoint implements EndpointInterface
 {
     protected $client;
@@ -9,15 +15,25 @@ abstract class AbstractEndpoint implements EndpointInterface
     protected $queryParams = [];
     protected $postBody;
     protected $responsePrototype;
+    protected $responseListPrototype;
+    protected $useResponseList = true;
+    protected $overwritePrototype = true;
 
     /**
      * AbstractEndpoint constructor.
      *
-     * @param ClientInterface $client
+     * @param ClientInterface            $client
+     * @param ResponseInterface|null     $response
+     * @param ResponseListInterface|null $responseList
      */
-    public function __construct(ClientInterface $client)
-    {
+    public function __construct(
+        ClientInterface $client,
+        ResponseInterface $response = null,
+        ResponseListInterface $responseList = null
+    ) {
         $this->client = $client;
+        $this->responsePrototype = $response ?? new Response();
+        $this->responseListPrototype = $responseList ?? new ResponseList();
     }
 
     /**
@@ -84,14 +100,29 @@ abstract class AbstractEndpoint implements EndpointInterface
     }
 
     /**
-     * @return mixed
+     * @return ResponseInterface
      */
-    abstract public function getResponsePrototype(): ResponseInterface;
+    public function getPrototype(): ResponseInterface
+    {
+        $prototype = $this->shouldUseResponseList() ?
+            $this->getResponseListPrototype() :
+            $this->getResponsePrototype();
+
+        return clone $prototype;
+    }
+
+    /**
+     * @return ResponseInterface
+     */
+    public function getResponsePrototype(): ResponseInterface
+    {
+        return $this->responsePrototype;
+    }
 
     /**
      * @param ResponseInterface $response
      *
-     * @return AbstractEndpoint
+     * @return EndpointInterface
      */
     public function withResponsePrototype(ResponseInterface $response): EndpointInterface
     {
@@ -99,6 +130,79 @@ abstract class AbstractEndpoint implements EndpointInterface
         $clone->responsePrototype = $response;
 
         return $clone;
+    }
+
+    /**
+     * @return ResponseList|ResponseListInterface
+     */
+    public function getResponseListPrototype(): ResponseListInterface
+    {
+        $list = $this->responseListPrototype;
+
+        if($this->overwritePrototype) {
+            $list->setPrototype($this->getResponsePrototype());
+        }
+
+        return $list;
+    }
+
+    /**
+     * @param ResponseListInterface $responseList
+     *
+     * @return EndpointInterface
+     */
+    public function withResponseListPrototype(ResponseListInterface $responseList): EndpointInterface
+    {
+        $clone = clone $this;
+        $clone->responseListPrototype = $responseList;
+
+        return $clone;
+    }
+
+    /**
+     * @return $this
+     */
+    public function returnResponse()
+    {
+        $this->useResponseList = false;
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function returnResponseList()
+    {
+        $this->useResponseList = true;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function shouldUseResponseList(): bool
+    {
+        return $this->useResponseList;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isOverwritePrototype(): bool
+    {
+        return $this->overwritePrototype;
+    }
+
+    /**
+     * @param bool $overwritePrototype
+     */
+    public function setOverwritePrototype(bool $overwritePrototype)
+    {
+        $this->overwritePrototype = $overwritePrototype;
+
+        return $this;
     }
 
     /**

@@ -32,10 +32,12 @@ class TransportOutput implements TransportOutputInterface
         array $headers = [],
         $body = null,
         array $info = []
-    ) {
+    ): TransportOutputInterface {
         $this->headers = $headers;
         $this->body = $body;
         $this->info = $info;
+
+        return $this;
     }
 
     /**

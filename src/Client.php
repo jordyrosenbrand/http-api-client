@@ -180,7 +180,7 @@ class Client implements ClientInterface
         string $httpMethod,
         EndpointInterface $endpoint
     ): ResponseInterface {
-        $response = $endpoint->getResponsePrototype();
+        $response = $endpoint->getPrototype();
         $request = $this->getRequestPrototype()
             ->setMethod($httpMethod)
             ->setUri($endpoint->getUri())
