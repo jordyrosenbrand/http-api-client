@@ -2,6 +2,8 @@
 
 namespace Jordy\Http;
 
+use Jordy\Http\Api\EndpointInterface;
+
 interface ClientInterface
 {
     public function getRequestPrototype(): RequestInterface;

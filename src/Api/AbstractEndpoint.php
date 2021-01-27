@@ -1,6 +1,6 @@
 <?php
 
-namespace Jordy\Http;
+namespace Jordy\Http\Api;
 
 abstract class AbstractEndpoint implements EndpointInterface
 {

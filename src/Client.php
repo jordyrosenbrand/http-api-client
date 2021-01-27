@@ -2,6 +2,7 @@
 
 namespace Jordy\Http;
 
+use Jordy\Http\Api\EndpointInterface;
 use Jordy\Http\Network\CurlTransport;
 use Jordy\Http\Network\TransportInterface;
 
