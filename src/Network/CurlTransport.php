@@ -1,6 +1,6 @@
 <?php
 
-namespace Jordy\Http;
+namespace Jordy\Http\Network;
 
 class CurlTransport implements TransportInterface
 {

@@ -2,6 +2,9 @@
 
 namespace Jordy\Http;
 
+use Jordy\Http\Network\CurlTransport;
+use Jordy\Http\Network\TransportInterface;
+
 class Client implements ClientInterface
 {
     const HTTP_GET = "GET";
@@ -20,6 +23,26 @@ class Client implements ClientInterface
     {
         $this->setTransporter(new CurlTransport());
         $this->setRequestPrototype(new Request());
+    }
+
+    /**
+     * @return TransportInterface
+     */
+    public function getTransporter(): TransportInterface
+    {
+        return $this->transporter;
+    }
+
+    /**
+     * @param TransportInterface $transporter
+     *
+     * @return $this
+     */
+    public function setTransporter(TransportInterface $transporter)
+    {
+        $this->transporter = $transporter;
+
+        return $this;
     }
 
     /**
@@ -177,7 +200,7 @@ class Client implements ClientInterface
         RequestInterface $request,
         ResponseInterface $response
     ): ResponseInterface {
-        $output = (new CurlTransport())->transfer($request);
+        $output = $this->getTransporter()->transfer($request);
 
         return $response
             ->setRequest($request)
