@@ -2,6 +2,9 @@
 
 namespace Jordy\Http;
 
+use Jordy\Http\Parser\JsonParser;
+use Jordy\Http\Parser\ParserInterface;
+
 class Request implements RequestInterface
 {
     private $method;

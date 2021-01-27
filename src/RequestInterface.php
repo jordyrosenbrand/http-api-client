@@ -2,6 +2,8 @@
 
 namespace Jordy\Http;
 
+use Jordy\Http\Parser\ParserInterface;
+
 interface RequestInterface
 {
     public function isGet(): bool;
