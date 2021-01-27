@@ -1,6 +1,9 @@
 <?php
 
-namespace Jordy\Http;
+namespace Jordy\Http\Api;
+
+use Jordy\Http\ResponseInterface;
+use Jordy\Http\ResponseListInterface;
 
 interface EndpointInterface
 {
@@ -16,9 +19,15 @@ interface EndpointInterface
 
     public function withPostBody($body = null): EndpointInterface;
 
+    public function getPrototype(): ResponseInterface;
+
     public function getResponsePrototype(): ResponseInterface;
 
     public function withResponsePrototype(ResponseInterface $response): EndpointInterface;
+
+    public function getResponseListPrototype(): ResponseListInterface;
+
+    public function withResponseListPrototype(ResponseListInterface $response): EndpointInterface;
 
     public function transfer(string $httpMethod): ResponseInterface;
 }

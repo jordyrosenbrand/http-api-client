@@ -1,6 +1,6 @@
 <?php
 
-namespace Jordy\Http;
+namespace Jordy\Http\Network;
 
 class TransportOutput implements TransportOutputInterface
 {
@@ -32,10 +32,12 @@ class TransportOutput implements TransportOutputInterface
         array $headers = [],
         $body = null,
         array $info = []
-    ) {
+    ): TransportOutputInterface {
         $this->headers = $headers;
         $this->body = $body;
         $this->info = $info;
+
+        return $this;
     }
 
     /**

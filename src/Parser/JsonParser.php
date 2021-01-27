@@ -1,6 +1,6 @@
 <?php
 
-namespace Jordy\Http;
+namespace Jordy\Http\Parser;
 
 class JsonParser implements ParserInterface
 {

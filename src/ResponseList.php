@@ -5,7 +5,7 @@ namespace Jordy\Http;
 use ArrayIterator;
 use IteratorAggregate;
 
-class ResponseList extends Response implements ResponseInterface, IteratorAggregate
+class ResponseList extends Response implements ResponseListInterface, IteratorAggregate
 {
     private $prototype;
     private $resultMapping;
@@ -74,9 +74,7 @@ class ResponseList extends Response implements ResponseInterface, IteratorAggreg
             }
 
             foreach($resultMapping as $mapping) {
-                $response = $this->extractValue($response, $mapping)
-                            ??
-                            $response;
+                $response = $this->extractValue($response, $mapping) ?? $response;
             }
         }
 
