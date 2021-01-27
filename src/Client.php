@@ -23,6 +23,26 @@ class Client implements ClientInterface
     }
 
     /**
+     * @return TransportInterface
+     */
+    public function getTransporter(): TransportInterface
+    {
+        return $this->transporter;
+    }
+
+    /**
+     * @param TransportInterface $transporter
+     *
+     * @return $this
+     */
+    public function setTransporter(TransportInterface $transporter)
+    {
+        $this->transporter = $transporter;
+
+        return $this;
+    }
+
+    /**
      * @return RequestInterface
      */
     public function getRequestPrototype(): RequestInterface
