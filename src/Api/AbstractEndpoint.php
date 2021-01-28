@@ -13,7 +13,7 @@ abstract class AbstractEndpoint implements EndpointInterface
     protected $client;
     protected $uri;
     protected $queryParams = [];
-    protected $postBody;
+    protected $requestBody;
     protected $responsePrototype;
     protected $responseListPrototype;
     protected $useResponseList = true;
@@ -81,20 +81,20 @@ abstract class AbstractEndpoint implements EndpointInterface
     /**
      * @return mixed
      */
-    public function getPostBody()
+    public function getRequestBody()
     {
-        return $this->postBody;
+        return $this->requestBody;
     }
 
     /**
-     * @param $postBody
+     * @param null $requestBody
      *
-     * @return AbstractEndpoint
+     * @return EndpointInterface
      */
-    public function withPostBody($postBody = null): EndpointInterface
+    public function withRequestBody($requestBody = null): EndpointInterface
     {
         $clone = clone $this;
-        $clone->postBody = $postBody;
+        $clone->requestBody = $requestBody;
 
         return $clone;
     }
@@ -133,13 +133,13 @@ abstract class AbstractEndpoint implements EndpointInterface
     }
 
     /**
-     * @return ResponseList|ResponseListInterface
+     * @return ResponseListInterface
      */
     public function getResponseListPrototype(): ResponseListInterface
     {
         $list = $this->responseListPrototype;
 
-        if($this->overwritePrototype) {
+        if($this->shouldOverwritePrototype()) {
             $list->setPrototype($this->getResponsePrototype());
         }
 
@@ -190,13 +190,15 @@ abstract class AbstractEndpoint implements EndpointInterface
     /**
      * @return bool
      */
-    public function isOverwritePrototype(): bool
+    public function shouldOverwritePrototype(): bool
     {
         return $this->overwritePrototype;
     }
 
     /**
      * @param bool $overwritePrototype
+     *
+     * @return $this
      */
     public function setOverwritePrototype(bool $overwritePrototype)
     {

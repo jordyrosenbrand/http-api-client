@@ -6,16 +6,6 @@ use Jordy\Http\Api\EndpointInterface;
 
 interface ClientInterface
 {
-    public function getRequestPrototype(): RequestInterface;
-
-    public function setRequestPrototype(
-        RequestInterface $request
-    ): ClientInterface;
-
-    public function getHeaders(): array;
-
-    public function setHeaders(array $headers);
-
     public function transfer(
         string $httpMethod,
         string $uri,

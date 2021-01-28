@@ -11,7 +11,7 @@ interface EndpointInterface
 
     public function getQueryParams(): array;
 
-    public function getPostBody();
+    public function getRequestBody();
 
     public function getPrototype(): ResponseInterface;
 }

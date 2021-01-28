@@ -40,8 +40,6 @@ class CurlTransport implements TransportInterface
         return $this;
     }
 
-
-
     /**
      * @param bool $init
      *
