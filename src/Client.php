@@ -186,7 +186,7 @@ class Client implements ClientInterface
             ->setUri($endpoint->getUri())
             ->setQueryParams($endpoint->getQueryParams())
             ->setHeaders($this->getHeaders())
-            ->setBody($endpoint->getPostBody());
+            ->setBody($endpoint->getRequestBody());
 
         return $this->transferRequest($request, $response);
     }
