@@ -21,7 +21,7 @@ class Request implements RequestInterface
      */
     public function __construct(ParserInterface $parser = null)
     {
-        $this->parser = $parser ?? new JsonParser();
+        $this->setParser($parser ?? new JsonParser());
     }
 
     /**

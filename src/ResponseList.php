@@ -78,7 +78,7 @@ class ResponseList extends Response implements ResponseListInterface, IteratorAg
             }
         }
 
-        if(is_object($response)) {
+        if(! is_array($response)) {
             $response = [$response];
         }
 

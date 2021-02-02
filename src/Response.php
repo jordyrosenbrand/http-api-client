@@ -71,6 +71,18 @@ class Response implements ResponseInterface
     }
 
     /**
+     * @param $header
+     *
+     * @return mixed|null
+     */
+    public function getResponseHeader($header)
+    {
+        return isset($this->getResponseHeaders()[$header]) ?
+            $this->getResponseHeaders()[$header] :
+            null;
+    }
+
+    /**
      * @return int
      */
     public function getStatusCode(): int
@@ -134,7 +146,7 @@ class Response implements ResponseInterface
      *
      * @return mixed
      */
-    protected function extractFromBody($key)
+    public function extractFromBody($key)
     {
         $value = $this->getResponseBody();
 
