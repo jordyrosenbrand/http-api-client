@@ -7,23 +7,20 @@ use PHPUnit\Framework\TestCase;
 
 class TransportOutputTest extends TestCase
 {
+    /**
+     * @return array[]
+     */
     public function hydrateProvider()
     {
         return [
             [
-                [
-                    "Content-Type" => "application/json"
-                ],
+                ["Content-Type" => "application/json"],
                 "body",
-                [
-                    "http_code" => 200
-                ],
+                ["http_code" => 200],
                 200
             ],
             [
-                [
-                    "Content-Type" => "application/json"
-                ],
+                ["Content-Type" => "application/json"],
                 "body",
                 [],
                 0

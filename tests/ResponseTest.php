@@ -44,7 +44,7 @@ class ResponseTest extends TestCase
     /**
      * @dataProvider responseHeaderProvider
      */
-    public function testGetResponseHeader($header, $headerValue)
+    public function testResponseHeader($header, $headerValue)
     {
         $response = new Response();
         $response->setResponseHeaders([

@@ -9,6 +9,9 @@ use PHPUnit\Framework\TestCase;
 
 class ResponseListTest extends TestCase
 {
+    /**
+     *
+     */
     public function testGetPrototypeIsClone()
     {
         $response = new Response();
@@ -17,6 +20,9 @@ class ResponseListTest extends TestCase
         $this->assertTrue($response !== $list->getPrototype());
     }
 
+    /**
+     * @return array
+     */
     public function responseBodyProvider()
     {
         return [
@@ -61,7 +67,7 @@ class ResponseListTest extends TestCase
     /**
      * @dataProvider responseBodyProvider
      */
-    public function testGetItems($responseBody, $resultMapping, $items)
+    public function testItems($responseBody, $resultMapping, $items)
     {
         $list = (new ResponseList())
             ->setResponseBody($responseBody)
@@ -82,6 +88,9 @@ class ResponseListTest extends TestCase
         $this->assertEquals(count($items), $list->count());
     }
 
+    /**
+     * @return array[]
+     */
     public function columnProvider()
     {
         return [
@@ -109,6 +118,9 @@ class ResponseListTest extends TestCase
         $this->assertEquals($expected, $list->column($column));
     }
 
+    /**
+     * @return array[]
+     */
     public function mapProvider()
     {
         return [
@@ -138,6 +150,9 @@ class ResponseListTest extends TestCase
         $this->assertEquals($expected, $list->map($keyColumn, $valueColumn));
     }
 
+    /**
+     * @return array[]
+     */
     public function firstProvider()
     {
         return [
@@ -171,6 +186,9 @@ class ResponseListTest extends TestCase
         $this->assertEquals($response, $list->first());
     }
 
+    /**
+     * @return array[]
+     */
     public function lastProvider()
     {
         return [
@@ -204,6 +222,9 @@ class ResponseListTest extends TestCase
         $this->assertEquals($response, $list->last());
     }
 
+    /**
+     * @return array[]
+     */
     public function findProvider()
     {
         return [
@@ -240,6 +261,9 @@ class ResponseListTest extends TestCase
         $this->assertEquals($expect, $list->find($column, $value));
     }
 
+    /**
+     *
+     */
     public function testToNestedArray()
     {
         $responseBody = [
@@ -254,6 +278,9 @@ class ResponseListTest extends TestCase
         $this->assertEquals($responseBody, $list->toNestedArray());
     }
 
+    /**
+     *
+     */
     public function testGetIterator()
     {
         $list = (new ResponseList(new Response()))

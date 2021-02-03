@@ -52,6 +52,9 @@ class RequestTest extends TestCase
         $this->assertTrue($request->isDelete());
     }
 
+    /**
+     * @return array[]
+     */
     public function queriedUriProvider()
     {
         return [
@@ -72,7 +75,7 @@ class RequestTest extends TestCase
     /**
      * @dataProvider queriedUriProvider
      */
-    public function testGetQueriedUri($uri, $queryParams)
+    public function testQueriedUrl($uri, $queryParams)
     {
         $request = (new Request())
             ->setUri($uri)
@@ -83,6 +86,9 @@ class RequestTest extends TestCase
         $this->assertEquals($expect, $request->getQueriedUri());
     }
 
+    /**
+     * @return \string[][][]
+     */
     public function headerProvider()
     {
         return [
@@ -99,7 +105,7 @@ class RequestTest extends TestCase
     /**
      * @dataProvider headerProvider
      */
-    public function testSetHeaders($headers)
+    public function testHeaders($headers)
     {
         $request = (new Request())
             ->setHeaders($headers);
@@ -112,6 +118,9 @@ class RequestTest extends TestCase
         $this->assertEquals($expect, $request->getHeaders());
     }
 
+    /**
+     * @return \int[][][]
+     */
     public function bodyProvider()
     {
         return [
@@ -124,7 +133,7 @@ class RequestTest extends TestCase
     /**
      * @dataProvider bodyProvider
      */
-    public function testGetParsedBody($body)
+    public function testBody($body)
     {
         $request = (new Request())
             ->setBody($body)

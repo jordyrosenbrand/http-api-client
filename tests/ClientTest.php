@@ -14,7 +14,10 @@ use PHPUnit\Framework\TestCase;
 
 class ClientTest extends TestCase
 {
-    public function testSetHeaders()
+    /**
+     *
+     */
+    public function testCombineHeaders()
     {
         $stubTransport = $this->createMock(CurlTransport::class);
         $stubTransport->method("transfer")
@@ -46,6 +49,9 @@ class ClientTest extends TestCase
         $this->assertEquals($expectedHeaders, $response->getRequest()->getHeaders());
     }
 
+    /**
+     * @return array[]
+     */
     public function transferProvider()
     {
         return [
@@ -97,6 +103,9 @@ class ClientTest extends TestCase
         $this->assertEquals($expectedHeaders, $clientResponse->getRequest()->getHeaders());
     }
 
+    /**
+     * @return array[]
+     */
     public function endpointDataProvider()
     {
         return [
@@ -111,9 +120,7 @@ class ClientTest extends TestCase
                         "three"
                     ]
                 ],
-                [
-                    "test" => "ok"
-                ]
+                ["test" => "ok"]
             ],
             [
                 new Response(),
@@ -126,9 +133,7 @@ class ClientTest extends TestCase
                         "three"
                     ]
                 ],
-                [
-                    "test" => "ok"
-                ]
+                ["test" => "ok"]
             ]
         ];
     }
@@ -165,6 +170,9 @@ class ClientTest extends TestCase
         $this->assertEquals($expectedUri, $response->getRequest()->getQueriedUri());
     }
 
+    /**
+     * @return array[]
+     */
     public function requestDataProvider()
     {
         return [
@@ -208,6 +216,9 @@ class ClientTest extends TestCase
         $this->assertEquals($expectedUri, $response->getRequest()->getQueriedUri());
     }
 
+    /**
+     * @return array[]
+     */
     public function outputDataProvider()
     {
         return [
