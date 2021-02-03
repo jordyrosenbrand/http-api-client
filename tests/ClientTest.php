@@ -6,77 +6,209 @@ use Jordy\Http\Api\AbstractEndpoint;
 use Jordy\Http\Client;
 use Jordy\Http\Network\CurlTransport;
 use Jordy\Http\Network\TransportOutput;
+use Jordy\Http\Request;
+use Jordy\Http\Response;
+use Jordy\Http\ResponseInterface;
 use Jordy\Http\ResponseList;
 use PHPUnit\Framework\TestCase;
 
 class ClientTest extends TestCase
 {
-    public function testTransfer()
+    public function transferProvider()
     {
-        $this->markTestIncomplete("Should cover more test cases");
-
-        $stubTransport = $this->createMock(CurlTransport::class);
-        $stubTransport->method("transfer")
-            ->willReturn(new TransportOutput());
-
-        $client = (new Client())
-            ->setTransporter($stubTransport)
-            ->setHeaders([
-                "Content-Type" => "application/json"
-            ]);
-
-        $response = $client->transfer(
-            "GET",
-            "https://www.google.nl/",
-            [],
-            null,
-            new ResponseList()
-        );
-
-        $this->assertTrue($response instanceof ResponseList);
-        $this->assertEquals("GET", $response->getRequest()->getMethod());
-        $this->assertEquals("https://www.google.nl/", $response->getRequest()->getUri());
+        return [
+            [
+                "GET",
+                "https://www.google.nl/",
+                ["Content-Type" => "application/json"],
+                "",
+                new ResponseList()
+            ],
+            [
+                "POST",
+                "https://www.google.nl/",
+                ["Content-Type" => "application/json"],
+                "",
+                new ResponseList()
+            ]
+        ];
     }
 
-    public function testTransferEndpoint()
+    /**
+     * @dataProvider transferProvider
+     */
+    public function testTransfer($method, $uri, $headers, $body, $response)
     {
-        $this->markTestIncomplete("Should cover more test cases");
-
         $stubTransport = $this->createMock(CurlTransport::class);
         $stubTransport->method("transfer")
             ->willReturn(new TransportOutput());
-
-        $stubEndpoint = $this->createMock(AbstractEndpoint::class);
-        $stubEndpoint->method("getPrototype")
-            ->willReturn(new ResponseList());
-
-        $stubEndpoint->method("getUri")
-            ->willReturn("https://www.google.nl/");
-
-        $stubEndpoint->method("getQueryParams")
-            ->willReturn([
-                "foo" => "bar",
-                "tags" => [
-                    "one",
-                    "two",
-                    "three"
-                ]
-            ]);
-        $stubEndpoint->method("getRequestBody")
-            ->willReturn([
-                "test" => "ok"
-            ]);
 
         $client = (new Client())
             ->setTransporter($stubTransport);
 
-        $response = $client->transferEndpoint("GET", $stubEndpoint);
-
-        $this->assertTrue($response instanceof ResponseList);
-        $this->assertEquals("GET", $response->getRequest()->getMethod());
-        $this->assertEquals(
-            "https://www.google.nl/?foo=bar&tags%5B0%5D=one&tags%5B1%5D=two&tags%5B2%5D=three",
-            $response->getRequest()->getQueriedUri()
+        $clientResponse = $client->transfer(
+            $method,
+            $uri,
+            $headers,
+            $body,
+            $response
         );
+
+        $expectedHeaders = [];
+        foreach($headers as $header => $value) {
+            $expectedHeaders[$header] = "{$header}: {$value}";
+        }
+
+        $this->assertTrue($clientResponse instanceof $response);
+        $this->assertEquals($method, $clientResponse->getRequest()->getMethod());
+        $this->assertEquals($uri, $clientResponse->getRequest()->getUri());
+        $this->assertEquals($expectedHeaders, $clientResponse->getRequest()->getHeaders());
+    }
+
+    public function endpointDataProvider()
+    {
+        return [
+            [
+                new ResponseList(),
+                "https://www.google.nl/",
+                [
+                    "foo" => "bar",
+                    "tags" => [
+                        "one",
+                        "two",
+                        "three"
+                    ]
+                ],
+                [
+                    "test" => "ok"
+                ]
+            ],
+            [
+                new Response(),
+                "https://www.google.nl/",
+                [
+                    "foo" => "bar",
+                    "tags" => [
+                        "one",
+                        "two",
+                        "three"
+                    ]
+                ],
+                [
+                    "test" => "ok"
+                ]
+            ]
+        ];
+    }
+
+    /**
+     * @dataProvider endpointDataProvider
+     */
+    public function testTransferEndpoint($prototype, $uri, $queryParams, $body)
+    {
+        $stubTransport = $this->createMock(CurlTransport::class);
+        $stubTransport->method("transfer")
+            ->willReturn(new TransportOutput());
+
+        $client = (new Client())
+            ->setTransporter($stubTransport);
+
+        $endpoint = $this->getMockForAbstractClass(
+            AbstractEndpoint::class,
+            [$client]
+        );
+
+        $endpoint = $prototype instanceof ResponseList ?
+            $endpoint->withResponseListPrototype($prototype) :
+            $endpoint->withResponsePrototype($prototype);
+
+        $endpoint = $endpoint->withUri($uri)
+            ->withQueryParams($queryParams)
+            ->withRequestBody($body);
+
+        $response = $client->transferEndpoint("GET", $endpoint);
+
+        $expectedUri = $uri . "?" . http_build_query($queryParams);
+
+        $this->assertEquals($expectedUri, $response->getRequest()->getQueriedUri());
+    }
+
+    public function requestDataProvider()
+    {
+        return [
+            [
+                "GET",
+                "https://www.google.nl/",
+                [
+                    "foo" => "bar",
+                    "tags" => [
+                        "one",
+                        "two",
+                        "three"
+                    ]
+                ]
+            ]
+        ];
+    }
+
+    /**
+     * @dataProvider requestDataProvider
+     */
+    public function testTransferRequestRequest($method, $uri, $queryParams)
+    {
+        $stubTransport = $this->createMock(CurlTransport::class);
+        $stubTransport->method("transfer")
+            ->willReturn(new TransportOutput());
+
+        $request = (new Request())
+            ->setMethod($method)
+            ->setUri($uri)
+            ->setQueryParams($queryParams);
+
+        $response = (new Client())
+            ->setTransporter($stubTransport)
+            ->transferRequest($request, new ResponseList());
+
+        $expectedUri = $uri . "?" . http_build_query($queryParams);
+
+        $this->assertTrue($response instanceof ResponseInterface);
+        $this->assertEquals($method, $response->getRequest()->getMethod());
+        $this->assertEquals($expectedUri, $response->getRequest()->getQueriedUri());
+    }
+
+    public function outputDataProvider()
+    {
+        return [
+            [
+                200,
+                ["Content-Type" => "application/json"],
+                ["test" => "ok"]
+            ]
+        ];
+    }
+
+    /**
+     * @dataProvider outputDataProvider
+     */
+    public function testTransferRequestResponse($statusCode, $headers, $body)
+    {
+        $output = (new TransportOutput())
+            ->hydrate(
+                $headers,
+                json_encode($body),
+                ["http_code" => $statusCode]
+            );
+
+        $stubTransport = $this->createMock(CurlTransport::class);
+        $stubTransport->method("transfer")
+            ->willReturn($output);
+
+        $response = (new Client())
+            ->setTransporter($stubTransport)
+            ->transferRequest(new Request(), new ResponseList());
+
+        $this->assertEquals($headers, $response->getResponseHeaders());
+        $this->assertEquals($statusCode, $response->getStatusCode());
+        $this->assertEquals($body, $response->getResponseBody());
     }
 }

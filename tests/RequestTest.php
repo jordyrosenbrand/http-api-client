@@ -52,45 +52,80 @@ class RequestTest extends TestCase
         $this->assertTrue($request->isDelete());
     }
 
-    public function testGetQueriedUri()
+    public function queriedUriProvider()
+    {
+        return [
+            [
+                "https://www.google.nl/",
+                [
+                    "foo" => "bar",
+                    "tags" => [
+                        "one",
+                        "two",
+                        "three"
+                    ]
+                ]
+            ]
+        ];
+    }
+
+    /**
+     * @dataProvider queriedUriProvider
+     */
+    public function testGetQueriedUri($uri, $queryParams)
     {
         $request = (new Request())
-            ->setUri("https://www.google.nl/")
-            ->setQueryParams([
-                "foo" => "bar",
-                "tags" => [
-                    "one",
-                    "two",
-                    "three"
-                ]
-            ]);
+            ->setUri($uri)
+            ->setQueryParams($queryParams);
 
-        $expect = "https://www.google.nl/?foo=bar&tags%5B0%5D=one&tags%5B1%5D=two&tags%5B2%5D=three";
+        $expect = $uri . "?" . http_build_query($queryParams);
 
         $this->assertEquals($expect, $request->getQueriedUri());
     }
 
-    public function testSetHeaders()
+    public function headerProvider()
+    {
+        return [
+            [
+                [
+                    "Content-Type" => "application/json",
+                    "Accept" => "application/json",
+                    "Token" => "fewopijfwoifwpf"
+                ]
+            ]
+        ];
+    }
+
+    /**
+     * @dataProvider headerProvider
+     */
+    public function testSetHeaders($headers)
     {
         $request = (new Request())
-            ->setHeaders([
-                "Content-Type" => "application/json",
-                "Accept" => "application/json",
-                "Token" => "fewopijfwoifwpf"
-            ]);
+            ->setHeaders($headers);
 
-        $expect = [
-            "Content-Type" => "Content-Type: application/json",
-            "Accept" => "Accept: application/json",
-            "Token" => "Token: fewopijfwoifwpf"
-        ];
+        $expect = [];
+        foreach($headers as $header => $value) {
+            $expect[$header] = "{$header}: {$value}";
+        }
 
         $this->assertEquals($expect, $request->getHeaders());
     }
 
-    public function testGetParsedBody()
+    public function bodyProvider()
     {
-        $body = ["id" => 1];
+        return [
+            [
+                ["id" => 1],
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider bodyProvider
+     */
+    public function testGetParsedBody($body)
+    {
         $request = (new Request())
             ->setBody($body)
             ->setParser(new JsonParser());
