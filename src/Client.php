@@ -201,6 +201,10 @@ class Client implements ClientInterface
         RequestInterface $request,
         ResponseInterface $response
     ): ResponseInterface {
+        foreach($this->getHeaders() as $header => $value) {
+            $request->addHeader($header, $value);
+        }
+
         $output = $this->getTransporter()->transfer($request);
 
         return $response

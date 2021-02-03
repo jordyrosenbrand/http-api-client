@@ -14,6 +14,38 @@ use PHPUnit\Framework\TestCase;
 
 class ClientTest extends TestCase
 {
+    public function testSetHeaders()
+    {
+        $stubTransport = $this->createMock(CurlTransport::class);
+        $stubTransport->method("transfer")
+            ->willReturn(new TransportOutput());
+
+        $baseHeaders = [
+            "Token" => "abc"
+        ];
+        $requestHeaders = [
+            "Content-Type" => "application/json"
+        ];
+
+        $request = (new Request())
+            ->setHeaders($requestHeaders);
+
+        $response = (new Client())
+            ->setTransporter($stubTransport)
+            ->setHeaders($baseHeaders)
+            ->transferRequest($request, new Response());
+
+        $expectedHeaders = [];
+        foreach($baseHeaders as $header => $value) {
+            $expectedHeaders[$header] = "{$header}: {$value}";
+        }
+        foreach($requestHeaders as $header => $value) {
+            $expectedHeaders[$header] = "{$header}: {$value}";
+        }
+
+        $this->assertEquals($expectedHeaders, $response->getRequest()->getHeaders());
+    }
+
     public function transferProvider()
     {
         return [
