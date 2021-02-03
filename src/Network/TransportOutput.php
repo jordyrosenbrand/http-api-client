@@ -27,6 +27,8 @@ class TransportOutput implements TransportOutputInterface
      * @param array $headers
      * @param null  $body
      * @param array $info
+     *
+     * @return TransportOutputInterface
      */
     public function hydrate(
         array $headers = [],

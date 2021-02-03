@@ -14,15 +14,31 @@ use PHPUnit\Framework\TestCase;
 
 class ClientTest extends TestCase
 {
+    private $transport;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $stubTransport = $this->createMock(CurlTransport::class);
+        $stubTransport->method("transfer")
+            ->willReturn(new TransportOutput());
+
+        $this->transport = $stubTransport;
+    }
+
+    public function tearDown(): void
+    {
+        parent::tearDown();
+
+        $this->transport = null;
+    }
+
     /**
      *
      */
     public function testCombineHeaders()
     {
-        $stubTransport = $this->createMock(CurlTransport::class);
-        $stubTransport->method("transfer")
-            ->willReturn(new TransportOutput());
-
         $baseHeaders = [
             "Token" => "abc"
         ];
@@ -34,7 +50,7 @@ class ClientTest extends TestCase
             ->setHeaders($requestHeaders);
 
         $response = (new Client())
-            ->setTransporter($stubTransport)
+            ->setTransporter($this->transport)
             ->setHeaders($baseHeaders)
             ->transferRequest($request, new Response());
 
@@ -77,12 +93,8 @@ class ClientTest extends TestCase
      */
     public function testTransfer($method, $uri, $headers, $body, $response)
     {
-        $stubTransport = $this->createMock(CurlTransport::class);
-        $stubTransport->method("transfer")
-            ->willReturn(new TransportOutput());
-
         $client = (new Client())
-            ->setTransporter($stubTransport);
+            ->setTransporter($this->transport);
 
         $clientResponse = $client->transfer(
             $method,
@@ -148,7 +160,7 @@ class ClientTest extends TestCase
             ->willReturn(new TransportOutput());
 
         $client = (new Client())
-            ->setTransporter($stubTransport);
+            ->setTransporter($this->transport);
 
         $endpoint = $this->getMockForAbstractClass(
             AbstractEndpoint::class,
@@ -196,17 +208,13 @@ class ClientTest extends TestCase
      */
     public function testTransferRequestRequest($method, $uri, $queryParams)
     {
-        $stubTransport = $this->createMock(CurlTransport::class);
-        $stubTransport->method("transfer")
-            ->willReturn(new TransportOutput());
-
         $request = (new Request())
             ->setMethod($method)
             ->setUri($uri)
             ->setQueryParams($queryParams);
 
         $response = (new Client())
-            ->setTransporter($stubTransport)
+            ->setTransporter($this->transport)
             ->transferRequest($request, new ResponseList());
 
         $expectedUri = $uri . "?" . http_build_query($queryParams);
