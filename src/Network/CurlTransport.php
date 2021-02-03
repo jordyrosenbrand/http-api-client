@@ -45,7 +45,7 @@ class CurlTransport implements TransportInterface
      *
      * @return mixed
      */
-    private function getCurlHandle($init = true)
+    public function getCurlHandle($init = true)
     {
         if(! isset($this->curlHandle) && $init) {
             $this->setCurlHandle(curl_init());
@@ -59,7 +59,7 @@ class CurlTransport implements TransportInterface
      *
      * @return $this
      */
-    private function setCurlHandle($curlHandle)
+    public function setCurlHandle($curlHandle)
     {
         $this->curlHandle = $curlHandle;
 
@@ -225,7 +225,7 @@ class CurlTransport implements TransportInterface
             curl_close($curlHandle);
         }
 
-        unset($this->curlHandle);
+        $this->curlHandle = null;
 
         return $this;
     }
