@@ -201,10 +201,6 @@ class ClientTest extends TestCase
      */
     public function testTransferEndpoint($prototype, $uri, $queryParams, $body)
     {
-        $stubTransport = $this->createMock(CurlTransport::class);
-        $stubTransport->method("transfer")
-            ->willReturn(new TransportOutput());
-
         $client = (new Client())
             ->setTransport($this->transport);
 
