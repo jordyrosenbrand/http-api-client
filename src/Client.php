@@ -13,7 +13,7 @@ class Client implements ClientInterface
     const HTTP_PUT = "PUT";
     const HTTP_DELETE = "DELETE";
 
-    private $transporter;
+    private $transport;
     private $requestPrototype;
     private $headers = [];
 
@@ -22,16 +22,16 @@ class Client implements ClientInterface
      */
     public function __construct()
     {
-        $this->setTransporter(new CurlTransport());
+        $this->setTransport(new CurlTransport());
         $this->setRequestPrototype(new Request());
     }
 
     /**
      * @return TransportInterface
      */
-    public function getTransporter(): TransportInterface
+    public function getTransport(): TransportInterface
     {
-        return $this->transporter;
+        return $this->transport;
     }
 
     /**
@@ -39,9 +39,9 @@ class Client implements ClientInterface
      *
      * @return $this
      */
-    public function setTransporter(TransportInterface $transporter)
+    public function setTransport(TransportInterface $transport)
     {
-        $this->transporter = $transporter;
+        $this->transport = $transport;
 
         return $this;
     }
@@ -205,7 +205,7 @@ class Client implements ClientInterface
             $request->addHeader($header, $value);
         }
 
-        $output = $this->getTransporter()->transfer($request);
+        $output = $this->getTransport()->transfer($request);
 
         return $response
             ->setRequest($request)

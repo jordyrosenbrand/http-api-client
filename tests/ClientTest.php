@@ -10,12 +10,16 @@ use Jordy\Http\Request;
 use Jordy\Http\Response;
 use Jordy\Http\ResponseInterface;
 use Jordy\Http\ResponseList;
+use Jordy\Http\ResponseListInterface;
 use PHPUnit\Framework\TestCase;
 
 class ClientTest extends TestCase
 {
     private $transport;
 
+    /**
+     *
+     */
     public function setUp(): void
     {
         parent::setUp();
@@ -27,6 +31,9 @@ class ClientTest extends TestCase
         $this->transport = $stubTransport;
     }
 
+    /**
+     *
+     */
     public function tearDown(): void
     {
         parent::tearDown();
@@ -50,7 +57,7 @@ class ClientTest extends TestCase
             ->setHeaders($requestHeaders);
 
         $response = (new Client())
-            ->setTransporter($this->transport)
+            ->setTransport($this->transport)
             ->setHeaders($baseHeaders)
             ->transferRequest($request, new Response());
 
@@ -63,6 +70,45 @@ class ClientTest extends TestCase
         }
 
         $this->assertEquals($expectedHeaders, $response->getRequest()->getHeaders());
+    }
+
+    /**
+     *
+     */
+    public function testGet()
+    {
+        $response = (new Client())
+            ->setTransport($this->transport)
+            ->get("/");
+
+        $this->assertTrue($response instanceof ResponseInterface);
+        $this->assertTrue($response->getRequest()->isGet());
+    }
+
+    /**
+     *
+     */
+    public function testGetList()
+    {
+        $response = (new Client())
+            ->setTransport($this->transport)
+            ->getList("/");
+
+        $this->assertTrue($response instanceof ResponseListInterface);
+        $this->assertTrue($response->getRequest()->isGet());
+    }
+
+    /**
+     *
+     */
+    public function testPost()
+    {
+        $response = (new Client())
+            ->setTransport($this->transport)
+            ->post("/");
+
+        $this->assertTrue($response instanceof ResponseInterface);
+        $this->assertTrue($response->getRequest()->isPost());
     }
 
     /**
@@ -94,7 +140,7 @@ class ClientTest extends TestCase
     public function testTransfer($method, $uri, $headers, $body, $response)
     {
         $client = (new Client())
-            ->setTransporter($this->transport);
+            ->setTransport($this->transport);
 
         $clientResponse = $client->transfer(
             $method,
@@ -160,7 +206,7 @@ class ClientTest extends TestCase
             ->willReturn(new TransportOutput());
 
         $client = (new Client())
-            ->setTransporter($this->transport);
+            ->setTransport($this->transport);
 
         $endpoint = $this->getMockForAbstractClass(
             AbstractEndpoint::class,
@@ -214,7 +260,7 @@ class ClientTest extends TestCase
             ->setQueryParams($queryParams);
 
         $response = (new Client())
-            ->setTransporter($this->transport)
+            ->setTransport($this->transport)
             ->transferRequest($request, new ResponseList());
 
         $expectedUri = $uri . "?" . http_build_query($queryParams);
@@ -255,7 +301,7 @@ class ClientTest extends TestCase
             ->willReturn($output);
 
         $response = (new Client())
-            ->setTransporter($stubTransport)
+            ->setTransport($stubTransport)
             ->transferRequest(new Request(), new ResponseList());
 
         $this->assertEquals($headers, $response->getResponseHeaders());
