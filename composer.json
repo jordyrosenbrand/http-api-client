@@ -1,6 +1,6 @@
 {
-    "name": "jordy/apiclient",
-    "description": "Api Client",
+    "name": "jordyrosenbrand/http-api-client",
+    "description": "HTTP API Client",
     "type": "library",
     "require": {
         "php": ">=7.3",
