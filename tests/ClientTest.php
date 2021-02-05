@@ -6,6 +6,7 @@ use Jordy\Http\Api\AbstractEndpoint;
 use Jordy\Http\Client;
 use Jordy\Http\Network\CurlTransport;
 use Jordy\Http\Network\TransportOutput;
+use Jordy\Http\Parser\JsonParser;
 use Jordy\Http\Request;
 use Jordy\Http\Response;
 use Jordy\Http\ResponseInterface;
@@ -215,7 +216,8 @@ class ClientTest extends TestCase
 
         $endpoint = $endpoint->withUri($uri)
             ->withQueryParams($queryParams)
-            ->withRequestBody($body);
+            ->withRequestBody($body)
+            ->withParser(new JsonParser());
 
         $response = $client->transferEndpoint("GET", $endpoint);
 
