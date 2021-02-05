@@ -3,6 +3,7 @@
 namespace Jordy\Http\Api;
 
 use Jordy\Http\ClientInterface;
+use Jordy\Http\Parser\ParserInterface;
 use Jordy\Http\Response;
 use Jordy\Http\ResponseInterface;
 use Jordy\Http\ResponseList;
@@ -18,6 +19,7 @@ abstract class AbstractEndpoint implements EndpointInterface
     protected $responseListPrototype;
     protected $useResponseList = true;
     protected $overwritePrototype = true;
+    protected $parser;
 
     /**
      * AbstractEndpoint constructor.
@@ -25,11 +27,13 @@ abstract class AbstractEndpoint implements EndpointInterface
      * @param ClientInterface            $client
      * @param ResponseInterface|null     $response
      * @param ResponseListInterface|null $responseList
+     * @param ParserInterface|null       $parser
      */
     public function __construct(
         ClientInterface $client,
         ResponseInterface $response = null,
-        ResponseListInterface $responseList = null
+        ResponseListInterface $responseList = null,
+        ParserInterface $parser = null
     ) {
         $this->client = $client;
         $this->responsePrototype = $response ?? new Response();
@@ -124,8 +128,9 @@ abstract class AbstractEndpoint implements EndpointInterface
      *
      * @return EndpointInterface
      */
-    public function withResponsePrototype(ResponseInterface $response): EndpointInterface
-    {
+    public function withResponsePrototype(
+        ResponseInterface $response
+    ): EndpointInterface {
         $clone = clone $this;
         $clone->responsePrototype = $response;
 
@@ -151,8 +156,9 @@ abstract class AbstractEndpoint implements EndpointInterface
      *
      * @return EndpointInterface
      */
-    public function withResponseListPrototype(ResponseListInterface $responseList): EndpointInterface
-    {
+    public function withResponseListPrototype(
+        ResponseListInterface $responseList
+    ): EndpointInterface {
         $clone = clone $this;
         $clone->responseListPrototype = $responseList;
 
@@ -205,6 +211,27 @@ abstract class AbstractEndpoint implements EndpointInterface
         $this->overwritePrototype = $overwritePrototype;
 
         return $this;
+    }
+
+    /**
+     * @return ParserInterface|null
+     */
+    public function getParser()
+    {
+        return $this->parser;
+    }
+
+    /**
+     * @param ParserInterface $parser
+     *
+     * @return AbstractEndpoint
+     */
+    public function withParser(ParserInterface $parser)
+    {
+        $clone = clone $this;
+        $clone->parser = $parser;
+
+        return $clone;
     }
 
     /**

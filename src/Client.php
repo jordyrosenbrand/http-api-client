@@ -5,6 +5,7 @@ namespace Jordy\Http;
 use Jordy\Http\Api\EndpointInterface;
 use Jordy\Http\Network\CurlTransport;
 use Jordy\Http\Network\TransportInterface;
+use Jordy\Http\Parser\ParserInterface;
 
 class Client implements ClientInterface
 {
@@ -63,6 +64,20 @@ class Client implements ClientInterface
         RequestInterface $request
     ): ClientInterface {
         $this->requestPrototype = $request;
+
+        return $this;
+    }
+
+    /**
+     * @param ParserInterface $parser
+     *
+     * @return $this
+     */
+    public function setParser(ParserInterface $parser)
+    {
+        $this->setRequestPrototype(
+            $this->getRequestPrototype()->setParser($parser)
+        );
 
         return $this;
     }
@@ -181,6 +196,11 @@ class Client implements ClientInterface
         EndpointInterface $endpoint
     ): ResponseInterface {
         $response = $endpoint->getPrototype();
+
+        if($parser = $endpoint->getParser()) {
+            $this->setParser($parser);
+        }
+
         $request = $this->getRequestPrototype()
             ->setMethod($httpMethod)
             ->setUri($endpoint->getUri())
