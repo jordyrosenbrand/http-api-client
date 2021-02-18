@@ -6,7 +6,7 @@
 
 ### Example
 ```php
-$client = (new Client())
+$client = (new Jordy\Http\Client())
     ->setHeaders([
         "Content-Type" => "application/json"
     ]);
