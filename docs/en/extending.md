@@ -46,6 +46,11 @@ if($id) {
 }
 ```
 
+___
+
+**The objects used in the example are documented below:**
+
+
 ### Entity
 An entity object maps all the available filters or fields
 
