@@ -17,7 +17,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Jordy\\Http\\Tests": "tests/"
+            "Jordy\\Http\\Tests\\": "tests/"
         }
     }
 }
