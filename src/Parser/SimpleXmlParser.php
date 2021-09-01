@@ -6,6 +6,19 @@ use SimpleXMLElement;
 
 class SimpleXmlParser implements ParserInterface
 {
+    private $root;
+    private $element;
+
+    /**
+     * @param string $rootName
+     * @param string $elementName
+     */
+    public function __construct($rootName = "root", $elementName = "item")
+    {
+        $this->root = $rootName;
+        $this->element = $elementName;
+    }
+
     /**
      * @param $data
      *
@@ -22,25 +35,26 @@ class SimpleXmlParser implements ParserInterface
      *
      * @return SimpleXMLElement
      */
-    protected function arrayToXml($array, SimpleXMLElement $xml = null)
-    {
-        if(! $xml) {
-            $root = "root";
-
-            if(count($array) == 1 && is_array(current($array))) {
-                $root = current(array_keys($array));
-                $array = $array[$root];
-            }
-
-            $xml = new SimpleXMLElement(
-                "<?xml version=\"1.0\"?><{$root}></{$root}>"
-            );
+    protected function arrayToXml(
+        $array,
+        SimpleXMLElement $xml = null,
+        $collection = false
+    ) {
+        if (! $xml) {
+            $xml = new SimpleXMLElement("<{$this->root} />");
         }
 
-        foreach($array as $key => $value) {
-            $key = is_numeric($key) ? $xml->getName() : $key;
-            if(is_array($value)) {
-                $xml->addChild($key, $this->arrayToXml($value, $xml->addChild($key)));
+        foreach ($array as $key => $value) {
+            $key = is_numeric($key) ?
+                ($collection ? $this->element : $xml->getName()) :
+                $key;
+
+            if (is_array($value)) {
+               $subNode = $xml->addChild($key);
+
+                foreach ($value as $item) {
+                    $subNode->addChild($this->element, $item);
+                }
             } else {
                 $xml->addChild($key, htmlspecialchars($value));
             }
@@ -66,12 +80,20 @@ class SimpleXmlParser implements ParserInterface
      *
      * @return array
      */
-    protected function xmlToArray(SimpleXMLElement $xml)
+    protected function xmlToArray(SimpleXMLElement $xml, $ignoreIndex = false)
     {
         $array = [];
 
-        foreach((array)$xml as $index => $node) {
-            $array[$index] = is_object($node) ? $this->xmlToArray($node) : $node;
+        foreach ((array)$xml as $index => $node) {
+            $value = $node instanceof SimpleXMLElement ?
+                $this->xmlToArray($node, $index == $node->getName()) :
+                $node;
+
+            if ($ignoreIndex) {
+                $array = $value;
+            } else {
+                $array[$index] = $value;
+            }
         }
 
         return $array;

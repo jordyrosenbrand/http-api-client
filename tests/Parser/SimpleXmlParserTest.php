@@ -18,13 +18,13 @@ class SimpleXmlParserTest extends TestCase
                 ["foo" => "bar"]
             ],
             [
-                "<?xml version=\"1.0\"?>\n<data><foo>bar</foo></data>\n",
-                ["data" => ["foo" => "bar"]]
-            ],
-            [
                 "<?xml version=\"1.0\"?>\n<root><foo>bar</foo><fruit><item>apple</item><item>orange</item><item>banana</item></fruit></root>\n",
-                ["data" => ["foo" => "bar", "fruit" => ["apple", "orange", "banana"]]]
-            ]
+                ["foo" => "bar", "fruit" => ["apple", "orange", "banana"]]
+            ],
+            /*[
+                "<?xml version=\"1.0\"?>\n<root><foo>bar</foo><food><fruit><item>apple</item><item>orange</item><item>banana</item></fruit></food></root>\n",
+                ["foo" => "bar", "food" => ["fruit" => ["apple", "orange", "banana"]]]
+            ]*/
         ];
     }
 
@@ -44,10 +44,6 @@ class SimpleXmlParserTest extends TestCase
     public function testDecode($string, $array)
     {
         $parser = new SimpleXmlParser();
-
-        if(count($array) == 1 && is_array(current($array))) {
-            $array = current($array);
-        }
 
         $this->assertEquals($array, $parser->decode($string));
     }
