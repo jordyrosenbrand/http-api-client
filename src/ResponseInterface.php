@@ -23,4 +23,6 @@ interface ResponseInterface
     public function isValid(): bool;
 
     public function toArray(): array;
+
+    public function extractFromBody($key);
 }
