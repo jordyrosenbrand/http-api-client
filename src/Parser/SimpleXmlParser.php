@@ -22,39 +22,39 @@ class SimpleXmlParser implements ParserInterface
     /**
      * @param $data
      *
-     * @return mixed
+     * @return bool|string|null
      */
     public function encode($data)
     {
-        return $this->arrayToXml($data)->asXML();
+        $simpleXmlElement = $this->arrayToXml($data);
+
+        return $simpleXmlElement ? $simpleXmlElement->asXML() : null;
     }
 
     /**
-     * @param SimpleXMLElement $xml
-     * @param                  $array
+     * @param                       $array
+     * @param SimpleXMLElement|null $xml
+     * @param false                 $collection
      *
-     * @return SimpleXMLElement
+     * @return SimpleXMLElement|null
      */
     protected function arrayToXml(
         $array,
         SimpleXMLElement $xml = null,
         $collection = false
     ) {
-        if (! $xml) {
+        if (! $xml instanceof SimpleXMLElement) {
             $xml = new SimpleXMLElement("<{$this->root} />");
         }
 
         foreach ($array as $key => $value) {
-            $key = is_numeric($key) ?
-                ($collection ? $this->element : $xml->getName()) :
-                $key;
+            if (is_numeric($key)) {
+                $key = $collection ? $this->element : $xml->getName();
+            }
 
             if (is_array($value)) {
-               $subNode = $xml->addChild($key);
-
-                foreach ($value as $item) {
-                    $subNode->addChild($this->element, $item);
-                }
+                $subNode = $xml->addChild($key);
+                $this->arrayToXml($value, $subNode, true);
             } else {
                 $xml->addChild($key, htmlspecialchars($value));
             }
@@ -70,9 +70,7 @@ class SimpleXmlParser implements ParserInterface
      */
     public function decode($data)
     {
-        $xml = simplexml_load_string($data);
-
-        return $this->xmlToArray($xml);
+        return $this->xmlToArray(simplexml_load_string($data));
     }
 
     /**
@@ -86,10 +84,10 @@ class SimpleXmlParser implements ParserInterface
 
         foreach ((array)$xml as $index => $node) {
             $value = $node instanceof SimpleXMLElement ?
-                $this->xmlToArray($node, $index == $node->getName()) :
+                $this->xmlToArray($node, $index !== $node->getName()) :
                 $node;
 
-            if ($ignoreIndex) {
+            if ($ignoreIndex || $index == $this->element) {
                 $array = $value;
             } else {
                 $array[$index] = $value;

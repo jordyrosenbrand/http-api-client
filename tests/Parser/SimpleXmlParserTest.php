@@ -21,10 +21,14 @@ class SimpleXmlParserTest extends TestCase
                 "<?xml version=\"1.0\"?>\n<root><foo>bar</foo><fruit><item>apple</item><item>orange</item><item>banana</item></fruit></root>\n",
                 ["foo" => "bar", "fruit" => ["apple", "orange", "banana"]]
             ],
-            /*[
+            [
                 "<?xml version=\"1.0\"?>\n<root><foo>bar</foo><food><fruit><item>apple</item><item>orange</item><item>banana</item></fruit></food></root>\n",
                 ["foo" => "bar", "food" => ["fruit" => ["apple", "orange", "banana"]]]
-            ]*/
+            ],
+            [
+                "<?xml version=\"1.0\"?>\n<root><foo>bar</foo><food><fruit><item>apple</item><item>orange</item><item>banana</item></fruit><vegetable><item>tomato</item><item>carrot</item></vegetable></food></root>\n",
+                ["foo" => "bar", "food" => ["fruit" => ["apple", "orange", "banana"], "vegetable" => ["tomato", "carrot"]]]
+            ]
         ];
     }
 
