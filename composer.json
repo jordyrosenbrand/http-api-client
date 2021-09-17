@@ -2,6 +2,7 @@
     "name": "jordyrosenbrand/http-api-client",
     "description": "HTTP API Client",
     "type": "library",
+    "license": "MIT",
     "require": {
         "php": ">=7.3",
         "ext-json": "*",
