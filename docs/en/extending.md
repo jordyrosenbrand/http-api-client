@@ -5,6 +5,7 @@
 - Easy accessibility of fields
 
 ### Example
+#### Create Api Object
 ```php
 $client = (new Jordy\Http\Client())
     ->setHeaders([
@@ -12,30 +13,36 @@ $client = (new Jordy\Http\Client())
     ]);
     
 $api = new JsonPlaceholderApi($client);
-
+```
+#### GET Request
+```php
 $responseList = $api->posts()->getAll();
 
 if(! $responseList->isValid()) {
     die("ResponseList not valid. Statuscode: " . $responseList->getStatusCode());
 }
-
-$responseList->count();
-$responseItem = $responseList->first(); 
-
-$post = new Post($responseItem->toArray());
-$post->body = "Lorem ipsum...";
-
-$saveResponse = $api->posts()->save($post);
-if(! $saveResponse->isValid()) {
-    die("Save Response not valid. Statuscode: " . $saveResponse->getStatusCode());
-}
+```
+#### GET Request with parameters
+```php
+$post = new Post($responseList->first()->toArray());
 
 // Pass the Post object as a Filter
 $filterResponseList = $api->posts()->getAll($post);
 if(! $filterResponseList->isValid()) {
     die("FilterResponseList not valid. Statuscode: " . $filterResponseList->getStatusCode());
 }
+```
+#### PUT Request
+```php
+$post->body = "Lorem ipsum...";
+$saveResponse = $api->posts()->update($post);
+if(! $saveResponse->isValid()) {
+    die("Save Response not valid. Statuscode: " . $saveResponse->getStatusCode());
+}
 
+```
+#### DELETE Request
+```php
 $id = $filterResponseList->first()->getId();
 
 if($id) {
@@ -184,7 +191,7 @@ class PostEndpoint extends AbstractEndpoint
     public function save(Post $post)
     {
         return $this
-            ->withPostBody($post->toArray())
+            ->withRequestBody($post->toArray())
             ->transfer(Client::HTTP_POST);
     }
 
@@ -196,8 +203,8 @@ class PostEndpoint extends AbstractEndpoint
     public function update(Post $post)
     {
         return $this
-            ->withUri("{$this->uri}/{$post->getId()}")
-            ->withPostBody($post->toArray())
+            ->withUri("{$this->uri}/{$post->id}")
+            ->withRequestBody($post->toArray())
             ->transfer(Client::HTTP_PUT);
     }
 
