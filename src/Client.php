@@ -105,9 +105,8 @@ class Client implements ClientInterface
     /**
      * @param string $uri
      * @param array  $headers
-     * @param null   $body
      *
-     * @return Response
+     * @return ResponseInterface
      */
     public function get(string $uri, array $headers = [])
     {
@@ -121,11 +120,11 @@ class Client implements ClientInterface
     }
 
     /**
-     * @param string $uri
-     * @param array  $headers
-     * @param null   $body
+     * @param string                 $uri
+     * @param array                  $headers
+     * @param ResponseInterface|null $responsePrototype
      *
-     * @return ResponseList
+     * @return ResponseInterface
      */
     public function getList(
         string $uri,
@@ -146,7 +145,7 @@ class Client implements ClientInterface
      * @param array  $headers
      * @param null   $body
      *
-     * @return Response
+     * @return ResponseInterface
      */
     public function post(string $uri, array $headers = [], $body = null)
     {
@@ -160,11 +159,11 @@ class Client implements ClientInterface
     }
 
     /**
-     * @param       $httpMethod
-     * @param       $uri
-     * @param array $headers
-     * @param null  $body
-     * @param null  $response
+     * @param string                 $httpMethod
+     * @param string                 $uri
+     * @param array                  $headers
+     * @param null                   $body
+     * @param ResponseInterface|null $response
      *
      * @return ResponseInterface
      */
@@ -197,7 +196,7 @@ class Client implements ClientInterface
     ): ResponseInterface {
         $response = $endpoint->getPrototype();
 
-        if($parser = $endpoint->getParser()) {
+        if ($parser = $endpoint->getParser()) {
             $this->setParser($parser);
         }
 
@@ -221,7 +220,7 @@ class Client implements ClientInterface
         RequestInterface $request,
         ResponseInterface $response
     ): ResponseInterface {
-        foreach($this->getHeaders() as $header => $value) {
+        foreach ($this->getHeaders() as $header => $value) {
             $request->addHeader($header, $value);
         }
 
