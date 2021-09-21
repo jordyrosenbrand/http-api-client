@@ -47,16 +47,18 @@ class SimpleXmlParser implements ParserInterface
             $xml = new SimpleXMLElement("<{$this->root} />");
         }
 
-        foreach ($array as $key => $value) {
-            if (is_numeric($key)) {
-                $key = $collection ? $this->element : $xml->getName();
-            }
+        if ($array) {
+            foreach ($array as $key => $value) {
+                if (is_numeric($key)) {
+                    $key = $collection ? $this->element : $xml->getName();
+                }
 
-            if (is_array($value)) {
-                $subNode = $xml->addChild($key);
-                $this->arrayToXml($value, $subNode, true);
-            } else {
-                $xml->addChild($key, htmlspecialchars($value));
+                if (is_array($value)) {
+                    $subNode = $xml->addChild($key);
+                    $this->arrayToXml($value, $subNode, true);
+                } else {
+                    $xml->addChild($key, htmlspecialchars($value));
+                }
             }
         }
 
@@ -68,30 +70,30 @@ class SimpleXmlParser implements ParserInterface
      *
      * @return array
      */
-    public function decode($data)
+    public function decode($contents)
     {
-        return $this->xmlToArray(simplexml_load_string($data));
+        return $this->xmlToArray(simplexml_load_string($contents));
     }
 
     /**
-     * @param SimpleXMLElement $xml
+     * @param SimpleXMLElement $parent
      *
      * @return array
      */
-    protected function xmlToArray(SimpleXMLElement $xml, $ignoreIndex = false)
+    protected function xmlToArray(SimpleXMLElement $parent)
     {
         $array = [];
 
-        foreach ((array)$xml as $index => $node) {
-            $value = $node instanceof SimpleXMLElement ?
-                $this->xmlToArray($node, $index !== $node->getName()) :
-                $node;
+        foreach ($parent as $name => $element) {
+            // set array-key by reference
+            $name == $this->element ?
+                $node = &$array[] :
+                $node = &$array[$name];
 
-            if ($ignoreIndex || $index == $this->element) {
-                $array = $value;
-            } else {
-                $array[$index] = $value;
-            }
+            // set array-value
+            $node = $element->count() ?
+                $this->xmlToArray($element) :
+                trim($element);
         }
 
         return $array;
