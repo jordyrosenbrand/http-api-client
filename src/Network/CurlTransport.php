@@ -219,7 +219,7 @@ class CurlTransport implements TransportInterface
      */
     private function closeConnection($curlHandle = null)
     {
-        $curlHandle = $curlHandle ?: $this->getCurlHandle(false);
+        $curlHandle = $curlHandle ?? $this->getCurlHandle(false);
 
         if($curlHandle) {
             curl_close($curlHandle);

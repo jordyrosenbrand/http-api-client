@@ -49,7 +49,7 @@ class TransportOutput implements TransportOutputInterface
     {
         $info = $this->getInfo();
 
-        return isset($info['http_code']) ? $info['http_code'] : 0;
+        return $info['http_code'] ?? 0;
     }
 
     /**

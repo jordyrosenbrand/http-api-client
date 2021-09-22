@@ -77,9 +77,7 @@ class Response implements ResponseInterface
      */
     public function getResponseHeader($header)
     {
-        return isset($this->getResponseHeaders()[$header]) ?
-            $this->getResponseHeaders()[$header] :
-            null;
+        return $this->getResponseHeaders()[$header] ?? null;
     }
 
     /**
