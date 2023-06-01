@@ -18,7 +18,7 @@ interface ResponseListInterface
 
     public function map(string $keyColumn, string $valueColumn): array;
 
-    public function find(string $column, $value);
+    public function find(string $column, $value): ?ResponseInterface;
 
     public function toNestedArray(): array;
 }

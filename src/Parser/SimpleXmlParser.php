@@ -6,14 +6,14 @@ use SimpleXMLElement;
 
 class SimpleXmlParser implements ParserInterface
 {
-    private $root;
-    private $element;
+    private string $root;
+    private string $element;
 
     /**
      * @param string $rootName
      * @param string $elementName
      */
-    public function __construct($rootName = "root", $elementName = "item")
+    public function __construct(string $rootName = "root", string $elementName = "item")
     {
         $this->root = $rootName;
         $this->element = $elementName;
@@ -21,28 +21,24 @@ class SimpleXmlParser implements ParserInterface
 
     /**
      * @param $data
-     *
-     * @return bool|string|null
+     * @return string
      */
-    public function encode($data)
+    public function encode($data): string
     {
-        $simpleXmlElement = $this->arrayToXml($data);
-
-        return $simpleXmlElement ? $simpleXmlElement->asXML() : null;
+        return $this->arrayToXml($data)->asXML();
     }
 
     /**
-     * @param                       $array
+     * @param array $array
      * @param SimpleXMLElement|null $xml
-     * @param false                 $collection
-     *
-     * @return SimpleXMLElement|null
+     * @param bool $collection
+     * @return SimpleXMLElement
      */
     protected function arrayToXml(
-        $array,
+        array $array,
         SimpleXMLElement $xml = null,
-        $collection = false
-    ) {
+        bool $collection = false
+    ): SimpleXMLElement {
         if (! $xml instanceof SimpleXMLElement) {
             $xml = new SimpleXMLElement("<{$this->root} />");
         }
@@ -68,7 +64,7 @@ class SimpleXmlParser implements ParserInterface
      *
      * @return array
      */
-    public function decode($data)
+    public function decode(?string $data)
     {
         return $this->xmlToArray(simplexml_load_string($data));
     }
@@ -78,7 +74,7 @@ class SimpleXmlParser implements ParserInterface
      *
      * @return array
      */
-    protected function xmlToArray(SimpleXMLElement $xml, $ignoreIndex = false)
+    protected function xmlToArray(SimpleXMLElement $xml, bool $ignoreIndex = false): array
     {
         $array = [];
 
@@ -87,7 +83,7 @@ class SimpleXmlParser implements ParserInterface
                 $this->xmlToArray($node, $index !== $node->getName()) :
                 $node;
 
-            if ($ignoreIndex || $index == $this->element) {
+            if ($ignoreIndex || $index === $this->element) {
                 $array = $value;
             } else {
                 $array[$index] = $value;

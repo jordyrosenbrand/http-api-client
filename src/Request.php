@@ -7,12 +7,12 @@ use Jordy\Http\Parser\ParserInterface;
 
 class Request implements RequestInterface
 {
-    private $method;
-    private $uri;
-    private $queryParams = [];
-    private $headers = [];
+    private string $method;
+    private string $uri;
+    private array $queryParams = [];
+    private array $headers = [];
     private $body;
-    private $parser;
+    private ParserInterface $parser;
 
     /**
      * Request constructor.
@@ -29,7 +29,7 @@ class Request implements RequestInterface
      */
     public function isGet(): bool
     {
-        return $this->getMethod() == Client::HTTP_GET;
+        return $this->getMethod() === Client::HTTP_GET;
     }
 
     /**
@@ -37,7 +37,7 @@ class Request implements RequestInterface
      */
     public function isPost(): bool
     {
-        return $this->getMethod() == Client::HTTP_POST;
+        return $this->getMethod() === Client::HTTP_POST;
     }
 
     /**
@@ -45,7 +45,7 @@ class Request implements RequestInterface
      */
     public function isPut(): bool
     {
-        return $this->getMethod() == Client::HTTP_PUT;
+        return $this->getMethod() === Client::HTTP_PUT;
     }
 
     /**
@@ -53,13 +53,13 @@ class Request implements RequestInterface
      */
     public function isDelete(): bool
     {
-        return $this->getMethod() == Client::HTTP_DELETE;
+        return $this->getMethod() === Client::HTTP_DELETE;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getMethod()
+    public function getMethod(): string
     {
         return $this->method;
     }
@@ -69,7 +69,7 @@ class Request implements RequestInterface
      *
      * @return $this
      */
-    public function setMethod($method): RequestInterface
+    public function setMethod(string $method): RequestInterface
     {
         $this->method = strtoupper($method);
 
@@ -77,11 +77,11 @@ class Request implements RequestInterface
     }
 
     /**
-     * @return mixed
+     * @return string|null
      */
-    public function getUri()
+    public function getUri(): string
     {
-        return $this->uri;
+        return $this->uri ?? "";
     }
 
     /**
@@ -99,7 +99,7 @@ class Request implements RequestInterface
     /**
      * @return mixed|string
      */
-    public function getQueriedUri()
+    public function getQueriedUri(): string
     {
         $uri = $this->getUri();
 
@@ -153,14 +153,13 @@ class Request implements RequestInterface
     }
 
     /**
-     * @param $header
-     * @param $value
-     *
+     * @param string $header
+     * @param string $value
      * @return $this
      */
-    public function addHeader($header, $value)
+    public function addHeader(string $header, string $value): self
     {
-        $this->headers[$header] = "{$header}: {$value}";
+        $this->headers[$header] = sprintf("%s: %s", $header, $value);
 
         return $this;
     }
@@ -174,9 +173,9 @@ class Request implements RequestInterface
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getParsedBody()
+    public function getParsedBody(): string
     {
         return $this->getParser()->encode($this->getBody());
     }

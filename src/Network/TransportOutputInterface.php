@@ -12,9 +12,9 @@ interface TransportOutputInterface
 
     public function getStatusCode(): int;
 
-    public function getHeaders();
+    public function getHeaders(): array;
 
     public function getBody();
 
-    public function getInfo();
+    public function getInfo(): array;
 }

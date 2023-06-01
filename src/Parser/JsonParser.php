@@ -4,7 +4,7 @@ namespace Jordy\Http\Parser;
 
 class JsonParser implements ParserInterface
 {
-    private $decodeAssociative;
+    private bool $decodeAssociative;
 
     /**
      * JsonParser constructor.
@@ -21,7 +21,7 @@ class JsonParser implements ParserInterface
      *
      * @return false|string
      */
-    public function encode($data)
+    public function encode($data): string
     {
         return json_encode($data);
     }
@@ -31,7 +31,7 @@ class JsonParser implements ParserInterface
      *
      * @return mixed
      */
-    public function decode($json)
+    public function decode(?string $json)
     {
         return json_decode($json, $this->decodeAssociative);
     }

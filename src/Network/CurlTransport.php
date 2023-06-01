@@ -2,13 +2,14 @@
 
 namespace Jordy\Http\Network;
 
+use CurlHandle;
 use Jordy\Http\RequestInterface;
 
 class CurlTransport implements TransportInterface
 {
-    private $output;
-    private $curlHandle;
-    private $autoCloseConnection = true;
+    private TransportOutputInterface $output;
+    private ?CurlHandle $curlHandle;
+    private bool $autoCloseConnection = true;
 
     /**
      * CurlTransport constructor.
@@ -45,7 +46,7 @@ class CurlTransport implements TransportInterface
      *
      * @return mixed
      */
-    public function getCurlHandle($init = true)
+    public function getCurlHandle(bool $init = true): CurlHandle
     {
         if(! isset($this->curlHandle) && $init) {
             $this->setCurlHandle(curl_init());
@@ -59,7 +60,7 @@ class CurlTransport implements TransportInterface
      *
      * @return $this
      */
-    public function setCurlHandle($curlHandle)
+    public function setCurlHandle(CurlHandle $curlHandle): self
     {
         $this->curlHandle = $curlHandle;
 
@@ -69,7 +70,7 @@ class CurlTransport implements TransportInterface
     /**
      * @return bool
      */
-    public function getAutoCloseConnection()
+    public function getAutoCloseConnection(): bool
     {
         return $this->autoCloseConnection;
     }
@@ -79,7 +80,7 @@ class CurlTransport implements TransportInterface
      *
      * @return $this
      */
-    public function setAutoCloseConnection($autoCloseConnection)
+    public function setAutoCloseConnection(bool $autoCloseConnection): self
     {
         $this->autoCloseConnection = $autoCloseConnection;
 
@@ -91,9 +92,8 @@ class CurlTransport implements TransportInterface
      *
      * @return TransportOutputInterface
      */
-    public function transfer(
-        RequestInterface $request
-    ): TransportOutputInterface {
+    public function transfer(RequestInterface $request): TransportOutputInterface
+    {
         $headers = [];
 
         $data = $this->initCurl($request)
@@ -103,7 +103,7 @@ class CurlTransport implements TransportInterface
                     $length = strlen($header);
                     $header = explode(':', $header, 2);
 
-                    if(count($header) == 2) {
+                    if(count($header) === 2) {
                         $headers[strtolower(trim($header[0]))] = trim($header[1]);
                     }
 
@@ -125,7 +125,7 @@ class CurlTransport implements TransportInterface
      *
      * @return $this
      */
-    protected function initCurl(RequestInterface $request)
+    protected function initCurl(RequestInterface $request): self
     {
         curl_setopt_array($this->getCurlHandle(), [
             CURLOPT_URL => $request->getQueriedUri(),
@@ -145,7 +145,7 @@ class CurlTransport implements TransportInterface
      *
      * @return $this
      */
-    protected function configureHeaderCallback(callable $callback)
+    protected function configureHeaderCallback(callable $callback): self
     {
         curl_setopt($this->getCurlHandle(), CURLOPT_HEADERFUNCTION, $callback);
 
@@ -157,7 +157,7 @@ class CurlTransport implements TransportInterface
      *
      * @return $this
      */
-    protected function setCustomHttpMethod(RequestInterface $request)
+    protected function setCustomHttpMethod(RequestInterface $request): self
     {
         $curlHandle = $this->getCurlHandle();
 
@@ -195,7 +195,7 @@ class CurlTransport implements TransportInterface
     /**
      * @return mixed
      */
-    protected function getInfo()
+    protected function getInfo(): array
     {
         return curl_getinfo($this->getCurlHandle());
     }
@@ -203,7 +203,7 @@ class CurlTransport implements TransportInterface
     /**
      * @return $this
      */
-    protected function close()
+    protected function close(): self
     {
         if($this->getAutoCloseConnection()) {
             $this->closeConnection();
@@ -217,7 +217,7 @@ class CurlTransport implements TransportInterface
      *
      * @return $this
      */
-    private function closeConnection($curlHandle = null)
+    private function closeConnection(CurlHandle $curlHandle = null): self
     {
         $curlHandle = $curlHandle ?: $this->getCurlHandle(false);
 

@@ -9,22 +9,23 @@ use Jordy\Http\Parser\ParserInterface;
 
 class Client implements ClientInterface
 {
-    const HTTP_GET = "GET";
-    const HTTP_POST = "POST";
-    const HTTP_PUT = "PUT";
-    const HTTP_DELETE = "DELETE";
+    public const HTTP_GET = "GET";
+    public const HTTP_POST = "POST";
+    public const HTTP_PUT = "PUT";
+    public const HTTP_DELETE = "DELETE";
 
-    private $transport;
-    private $requestPrototype;
-    private $headers = [];
+    private TransportInterface $transport;
+    private RequestInterface $requestPrototype;
+    private array $headers = [];
 
     /**
-     * Client constructor.
+     * @param RequestInterface|null $request
+     * @param TransportInterface|null $transport
      */
-    public function __construct()
+    public function __construct(RequestInterface $request = null, TransportInterface $transport = null)
     {
-        $this->setTransport(new CurlTransport());
-        $this->setRequestPrototype(new Request());
+        $this->setRequestPrototype($request ?? new Request());
+        $this->setTransport($transport ?? new CurlTransport());
     }
 
     /**
@@ -40,7 +41,7 @@ class Client implements ClientInterface
      *
      * @return $this
      */
-    public function setTransport(TransportInterface $transport)
+    public function setTransport(TransportInterface $transport): self
     {
         $this->transport = $transport;
 
@@ -60,24 +61,9 @@ class Client implements ClientInterface
      *
      * @return ClientInterface
      */
-    public function setRequestPrototype(
-        RequestInterface $request
-    ): ClientInterface {
-        $this->requestPrototype = $request;
-
-        return $this;
-    }
-
-    /**
-     * @param ParserInterface $parser
-     *
-     * @return $this
-     */
-    public function setParser(ParserInterface $parser)
+    public function setRequestPrototype(RequestInterface $request): self
     {
-        $this->setRequestPrototype(
-            $this->getRequestPrototype()->setParser($parser)
-        );
+        $this->requestPrototype = $request;
 
         return $this;
     }
@@ -95,7 +81,7 @@ class Client implements ClientInterface
      *
      * @return $this
      */
-    public function setHeaders(array $headers)
+    public function setHeaders(array $headers): self
     {
         $this->headers = $headers;
 
@@ -109,7 +95,7 @@ class Client implements ClientInterface
      *
      * @return Response
      */
-    public function get(string $uri, array $headers = [])
+    public function get(string $uri, array $headers = []): ResponseInterface
     {
         return $this->transfer(
             self::HTTP_GET,
@@ -131,7 +117,7 @@ class Client implements ClientInterface
         string $uri,
         array $headers = [],
         ResponseInterface $responsePrototype = null
-    ) {
+    ): ResponseListInterface {
         return $this->transfer(
             self::HTTP_GET,
             $uri,
@@ -148,7 +134,7 @@ class Client implements ClientInterface
      *
      * @return Response
      */
-    public function post(string $uri, array $headers = [], $body = null)
+    public function post(string $uri, array $headers = [], $body = null): ResponseInterface
     {
         return $this->transfer(
             self::HTTP_POST,
@@ -197,16 +183,16 @@ class Client implements ClientInterface
     ): ResponseInterface {
         $response = $endpoint->getPrototype();
 
-        if($parser = $endpoint->getParser()) {
-            $this->setParser($parser);
-        }
-
         $request = $this->getRequestPrototype()
             ->setMethod($httpMethod)
             ->setUri($endpoint->getUri())
             ->setQueryParams($endpoint->getQueryParams())
             ->setHeaders($this->getHeaders())
             ->setBody($endpoint->getRequestBody());
+
+        if($parser = $endpoint->getParser()) {
+            $request->setParser($parser);
+        }
 
         return $this->transferRequest($request, $response);
     }

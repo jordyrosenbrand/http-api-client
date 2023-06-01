@@ -4,12 +4,12 @@ namespace Jordy\Http;
 
 class Response implements ResponseInterface
 {
-    private $request;
-    private $requestedUri;
-    private $requestedBody;
+    private RequestInterface $request;
+    private string $requestedUri;
+    private string $requestedBody;
 
-    private $responseHeaders;
-    private $statusCode;
+    private array $responseHeaders = [];
+    private int $statusCode;
     private $responseBody;
 
     /**
@@ -17,7 +17,7 @@ class Response implements ResponseInterface
      */
     public function isValid(): bool
     {
-        return substr($this->getStatusCode(), 0, 1) == 2;
+        return substr($this->getStatusCode(), 0, 1) === "2";
     }
 
     /**
@@ -53,7 +53,7 @@ class Response implements ResponseInterface
     /**
      * @return mixed
      */
-    public function getResponseHeaders()
+    public function getResponseHeaders(): array
     {
         return $this->responseHeaders;
     }
@@ -75,11 +75,9 @@ class Response implements ResponseInterface
      *
      * @return mixed|null
      */
-    public function getResponseHeader($header)
+    public function getResponseHeader($header): ?string
     {
-        return isset($this->getResponseHeaders()[$header]) ?
-            $this->getResponseHeaders()[$header] :
-            null;
+        return $this->getResponseHeaders()[$header] ?? null;
     }
 
     /**
@@ -128,7 +126,7 @@ class Response implements ResponseInterface
      *
      * @return mixed|null
      */
-    protected function extractValue($item, $key)
+    protected function extractValue($item, string $key)
     {
         if(is_object($item) && property_exists($item, $key)) {
             $value = $item->{$key};

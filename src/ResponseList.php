@@ -7,8 +7,8 @@ use IteratorAggregate;
 
 class ResponseList extends Response implements ResponseListInterface, IteratorAggregate
 {
-    private $prototype;
-    private $resultMapping;
+    private ResponseInterface $prototype;
+    private array $resultMapping;
 
     /**
      * ResponseList constructor.
@@ -41,20 +41,23 @@ class ResponseList extends Response implements ResponseListInterface, IteratorAg
     }
 
     /**
-     * @return mixed
+     * @return array
      */
-    public function getResultMapping()
+    public function getResultMapping(): array
     {
-        return $this->resultMapping;
+        return $this->resultMapping ?? [];
     }
 
     /**
      * @param $resultMapping
-     *
      * @return $this
      */
-    public function setResultMapping($resultMapping)
+    public function setResultMapping($resultMapping): self
     {
+        if(! is_array($resultMapping)) {
+            $resultMapping = [$resultMapping];
+        }
+
         $this->resultMapping = $resultMapping;
 
         return $this;
@@ -180,7 +183,7 @@ class ResponseList extends Response implements ResponseListInterface, IteratorAg
      *
      * @return ResponseInterface|null
      */
-    public function find(string $column, $value)
+    public function find(string $column, $value): ?ResponseInterface
     {
         if($items = $this->getItems()) {
             foreach($items as $item) {

@@ -49,13 +49,13 @@ class TransportOutput implements TransportOutputInterface
     {
         $info = $this->getInfo();
 
-        return isset($info['http_code']) ? $info['http_code'] : 0;
+        return $info['http_code'] ?? 0;
     }
 
     /**
      * @return mixed
      */
-    public function getHeaders()
+    public function getHeaders(): array
     {
         return $this->headers;
     }
@@ -71,7 +71,7 @@ class TransportOutput implements TransportOutputInterface
     /**
      * @return mixed
      */
-    public function getInfo()
+    public function getInfo(): array
     {
         return $this->info;
     }

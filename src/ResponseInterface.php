@@ -6,15 +6,15 @@ interface ResponseInterface
 {
     public function setRequest(RequestInterface $request): ResponseInterface;
 
-    public function getRequest();
+    public function getRequest(): RequestInterface;
 
     public function setStatusCode(int $statusCode): ResponseInterface;
 
-    public function getStatusCode();
+    public function getStatusCode(): int;
 
     public function setResponseHeaders($headers): ResponseInterface;
 
-    public function getResponseHeaders();
+    public function getResponseHeaders(): array;
 
     public function setResponseBody($body): ResponseInterface;
 

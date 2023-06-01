@@ -14,21 +14,21 @@ interface RequestInterface
 
     public function isDelete(): bool;
 
-    public function getMethod();
+    public function getMethod(): string;
 
     public function setMethod(string $method): RequestInterface;
 
-    public function getUri();
+    public function getUri(): string;
 
     public function setUri(string $uri): RequestInterface;
 
-    public function getQueriedUri();
+    public function getQueriedUri(): string;
 
-    public function getQueryParams();
+    public function getQueryParams(): array;
 
     public function setQueryParams(array $queryParams = []): RequestInterface;
 
-    public function getHeaders();
+    public function getHeaders(): array;
 
     public function setHeaders(array $headers): RequestInterface;
 
@@ -36,7 +36,7 @@ interface RequestInterface
 
     public function setBody($body): RequestInterface;
 
-    public function getParsedBody();
+    public function getParsedBody(): string;
 
     public function getParser(): ParserInterface;
 
